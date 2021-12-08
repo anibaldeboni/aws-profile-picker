@@ -9,7 +9,7 @@ const awsConfigFile = `${HOME}/.aws/config`;
 const readConfigFile = (path: string) => fs.readFileSync(path);
 
 const getProfileNames = (configFile: Buffer) => {
-  const profileNamesRegex = /(?<=profile\s)(\w+-\w+)/gi;
+  const profileNamesRegex = /(?<=profile\s)[\w-_]+/g;
   const profiles = configFile.toString().match(profileNamesRegex);
   if (!profiles) throw Error('No profiles found');
   return profiles;
