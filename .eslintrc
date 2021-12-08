@@ -1,0 +1,25 @@
+{
+  "root": true,
+  "parser": "@typescript-eslint/parser",
+  "extends": [
+    "eslint:recommended",
+    "airbnb-typescript/base",
+    "plugin:@typescript-eslint/eslint-recommended",
+    "plugin:@typescript-eslint/recommended"
+  ],
+  "parserOptions": {
+    "project": ["./tsconfig.json", "./jest.config.js"]
+  },
+  "plugins": [
+        "@typescript-eslint",
+        "import"
+    ],
+  // "env": {
+  //   "jest": true,
+  //   "es6": true,
+  //   "node": true
+  // },
+  "rules": {
+    "@typescript-eslint/no-empty-interface": 0
+  }
+}

@@ -1,0 +1,32 @@
+{
+  "compileOnSave": true,
+  "compilerOptions": {
+    "listFiles": true,
+		"resolveJsonModule": true,
+		"skipLibCheck": true,
+		"forceConsistentCasingInFileNames": true,
+		"target": "es2015",
+		"module": "commonjs",
+		"moduleResolution": "node",
+		"lib": ["es2017"],
+		"allowJs": true,
+		"checkJs": true,
+		"sourceMap": true,
+		"outDir": "dist",
+		"removeComments": true,
+		"strict": true,
+		"noImplicitAny": false,
+		"esModuleInterop": true,
+		"experimentalDecorators": true,
+		"emitDecoratorMetadata": true,
+		"baseUrl": "src/",
+    "paths": {
+      "@application/*": ["application/*"],
+      "@infra/*": ["infra/*"],
+      "@commons/*": ["commons/*"],
+      "@config/*": ["config/*"]
+    }
+  },
+  "include": ["src/**/*"],
+	"exclude": []
+}
