@@ -21,7 +21,7 @@
 		"emitDecoratorMetadata": true,
 		"baseUrl": "src/",
     "paths": {
-      "@application/*": ["application/*"],
+      "@helpers/*": ["helpers/*"],
       "@infra/*": ["infra/*"],
       "@commons/*": ["commons/*"],
       "@config/*": ["config/*"]
