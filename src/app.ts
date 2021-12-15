@@ -1,8 +1,7 @@
 import os from 'os';
 import prompts from 'prompts';
 import chalk from 'chalk';
-import { exec } from 'child_process';
-import { checkIfCommandExists, checkIfFileExists, readFile, run } from './helpers/fs';
+import { commandExists, fileExists, readFile, run } from './helpers/fs';
 
 const AWS_CONFIG_FILE = `${os.homedir()}/.aws/config`;
 
@@ -16,19 +15,18 @@ const getProfileNames = (configFile: Buffer): string[] => {
 const buildPromptMenu = (choices: string[]) => choices.map((choice) => ({ title: choice, value: choice }));
 
 const checkAWS = async () => {
-  const awsConfigIsPresent = checkIfFileExists(AWS_CONFIG_FILE);
-  const awsCliIsPresent = checkIfCommandExists('aws');
+  const awsConfigIsPresent = await fileExists(AWS_CONFIG_FILE);
+  const awsCliIsPresent = await commandExists('aws');
 
   if (!awsCliIsPresent || !awsConfigIsPresent) {
     const OK = chalk.greenBright('ok');
     const NOT_FOUND = chalk.redBright('not found');
 
-    console.error(
-      `${chalk.bold('Some dependecies were not found!')}\n`,
-      `· aws-cli: ${awsCliIsPresent ? OK : NOT_FOUND}\n`,
-      `· config file (~/.aws/config): ${awsConfigIsPresent ? OK : NOT_FOUND}`,
+    throw new Error(
+      `${chalk.bold('Some dependecies were not found 😵')}
+· aws-cli: ${awsCliIsPresent ? OK : NOT_FOUND}
+· config file (~/.aws/config): ${awsConfigIsPresent ? OK : NOT_FOUND}`,
     );
-    process.exit(1);
   }
 };
 
@@ -47,20 +45,15 @@ const promptAwsProfile = async () => {
   );
 
   if (!profile) {
-    console.error('No profile selected. Exiting');
-    process.exit(0);
+    throw new Error('No profile selected. Exiting');
   }
 
-  const sso = await run('aws', ['sso', 'login', '--profile', profile]);
-
-  if (sso !== 0) {
-    console.error('AWS SSO terminated unexpectedly');
-    process.exit(1);
-  }
+  return run('aws', ['sso', 'login', '--profile', profile]);
 };
 
 const promptK9s = async () => {
-  if (checkIfCommandExists('k9s')) {
+  const k9sIsPresent = await commandExists('k9s');
+  if (k9sIsPresent) {
     const { runK9s } = await prompts(
       {
         type: 'toggle',
@@ -73,16 +66,22 @@ const promptK9s = async () => {
     );
 
     if (runK9s) {
-      console.info('Running k9s...');
-      exec('k9s').unref();
+      console.info('🐶 launching k9s...');
+      return run('k9s');
     }
   }
 };
 
 (async () => {
-  await checkAWS();
+  try {
+    await checkAWS();
+    await promptAwsProfile();
+    await promptK9s();
 
-  await promptAwsProfile();
+    process.exit(0);
 
-  await promptK9s();
+  } catch (error: any) {
+    console.error(error.message);
+    process.exit(1);
+  }
 })();
